@@ -2,7 +2,6 @@
 #include <string>
 #include <iomanip>
 #include <iostream>
-#include <fstream>
 using namespace std;
 #include "exception.h"
 #include "itemmanage.h"
@@ -11,172 +10,119 @@ ItemManage::ItemManage(){
 	head = NULL;
 	code = 123456;
 }
+
 ItemManage::~ItemManage(){
 	;
 }
-//	æ–°å¢å•†å“
-void ItemManage::Add( string No, string Name, float Price, int Count, float Discount, bool Promotion , float Vipdiscount ){
-	if(Promotion == true){
-		if(Discount != 1 || Vipdiscount != 1 ){
-			cout<<"æ–°å¢å¤±è´¥ï¼Œä¿ƒé”€ä¸èƒ½å åŠ ï¼"<<endl;
-			return;
-		}
+
+//	ĞÂÔöÉÌÆ·
+void ItemManage::Add( string No, string Name, float Price, int Count, float Discount, bool Promotion  ){
+	if(Discount != 1 && Promotion == true){
+		cout<<"ĞÂÔöÊ§°Ü£¬´ÙÏú²»ÄÜµş¼Ó£¡"<<endl;
+		return;
 	}
-	node *p = new node;						//  åˆ›å»ºé“¾è¡¨èŠ‚ç‚¹
-	p->commodity = new Item( No, Name, Price, Count, Discount, Promotion, Vipdiscount );
+	node *p = new node;						//  ´´½¨Á´±í½Úµã
+	p->commodity = new Item( No, Name, Price, Count, Discount, Promotion );
 	p->next = head;
-	head = p;								//	æ’å…¥åˆ°é“¾è¡¨å¤´éƒ¨	
-	//cout<<"æ–°å¢å®Œæˆï¼\n";
+	head = p;								//	²åÈëµ½Á´±íÍ·²¿	
+	/*cout<<"ĞÂÔöÍê³É£¡\n";*/
 }
-//  åˆ é™¤å•†å“
+//  É¾³ıÉÌÆ·
 void ItemManage::Remove( string No )	{
-	node *p, **q = &head;					//  å½“å‰é“¾è¡¨èŠ‚ç‚¹åœ°å€
+	node *p, **q = &head;					//  µ±Ç°Á´±í½ÚµãµØÖ·
 	for( p=head; p!=NULL; p=p->next ) 
 	{
 		if( p->commodity->getNo( )== No)
-			break;							//	æ‰¾åˆ°
- 		if( p->next == NULL ) throw Exception("æœªæ‰¾åˆ°è¯¥å•†å“ï¼");
+			break;							//	ÕÒµ½
+ 		if( p->next == NULL ) throw Exception("Î´ÕÒµ½¸ÃÉÌÆ·£¡");
 		q = &p->next;	
 	}
-	*q = p->next;							//	åˆ é™¤é“¾è¡¨èŠ‚ç‚¹
-	delete p->commodity;					//	é‡Šæ”¾Itemå¯¹è±¡
-	delete p;								//	é‡Šæ”¾é“¾è¡¨èŠ‚ç‚¹
-	cout<<"åˆ é™¤æˆåŠŸï¼"<<endl;
+	*q = p->next;							//	É¾³ıÁ´±í½Úµã
+	delete p->commodity;					//	ÊÍ·ÅItem¶ÔÏó
+	delete p;								//	ÊÍ·ÅÁ´±í½Úµã
+	cout<<"É¾³ı³É¹¦£¡"<<endl;
 }
-//	è·å¾—å•†å“å
+//	»ñµÃÉÌÆ·Ãû
 string ItemManage::getName( string No ){
-	node *p;								// å½“å‰é“¾è¡¨èŠ‚ç‚¹åœ°å€
+	node *p;								// µ±Ç°Á´±í½ÚµãµØÖ·
 	for( p=head; p!=NULL; p=p->next ) 
 	{
 		if( p->commodity->getNo( )== No )
-			break;							//	æ‰¾åˆ°
+			break;							//	ÕÒµ½
 	}
-	if(p==NULL) throw Exception("æœªæ‰¾åˆ°è¯¥å•†å“ï¼");
+	if(p==NULL) throw Exception("Î´ÕÒµ½¸ÃÉÌÆ·£¡");
 	string name;
 	name = p->commodity->getName();
 	return name;
 }
-//	è·å¾—å•†å“å•ä»·
-float &ItemManage::getPrice( string No){
-	node *p;								// å½“å‰é“¾è¡¨èŠ‚ç‚¹åœ°å€
+//	»ñµÃÉÌÆ·µ¥¼Û
+float ItemManage::getPrice( string No){
+	node *p;								// µ±Ç°Á´±í½ÚµãµØÖ·
 	for( p=head; p!=NULL; p=p->next ) 
 	{
 		if( p->commodity->getNo( )== No )
-			break;							//	æ‰¾åˆ°
+			break;							//	ÕÒµ½
 	}
-	if(p==NULL) throw Exception("æœªæ‰¾åˆ°è¯¥å•†å“ï¼");
+	if(p==NULL) throw Exception("Î´ÕÒµ½¸ÃÉÌÆ·£¡");
 	return p->commodity->getPrice();
 }
-//	è·å¾—å•†å“æ€»æ•°
+//	»ñµÃÉÌÆ·ÊıÁ¿
 int &ItemManage::getCount( string No ){
-	node *p;								// å½“å‰é“¾è¡¨èŠ‚ç‚¹åœ°å€
+	node *p;								// µ±Ç°Á´±í½ÚµãµØÖ·
 	for( p=head; p!=NULL; p=p->next ) 
 	{
 		if( p->commodity ->getNo( )== No )
-			break;							//	æ‰¾åˆ°
+			break;							//	ÕÒµ½
 	}
-	if(p==NULL) throw Exception("æ— è¯¥äººä¿¡æ¯ï¼");
+	if(p==NULL) throw Exception("ÎŞ¸ÃÈËĞÅÏ¢£¡");
 	return p->commodity->getCount();
 }
-//	è·å¾—å•†å“æŠ˜æ‰£
-float &ItemManage::getDiscount( string No ){
-	node *p;								// å½“å‰é“¾è¡¨èŠ‚ç‚¹åœ°å€
+//	»ñµÃÉÌÆ·ÕÛ¿Û
+float ItemManage::getDiscount( string No ){
+	node *p;								// µ±Ç°Á´±í½ÚµãµØÖ·
 	for( p=head; p!=NULL; p=p->next ) 
 	{
 		if( p->commodity->getNo( )== No )
-			break;							//	æ‰¾åˆ°
+			break;							//	ÕÒµ½
 	}
-	if(p==NULL) throw Exception("æœªæ‰¾åˆ°è¯¥å•†å“ï¼");
+	if(p==NULL) throw Exception("Î´ÕÒµ½¸ÃÉÌÆ·£¡");
 	return p->commodity->getDiscount();
 	
 }
-//	è·å¾—ä¿ƒé”€
-bool &ItemManage::getPromotion( string No ){
-	node *p;								// å½“å‰é“¾è¡¨èŠ‚ç‚¹åœ°å€
-	for( p=head; p!=NULL; p=p->next ) 
-	{
-		if( p->commodity->getNo( )== No )
-			break;							//	æ‰¾åˆ°
-	}
-	if(p==NULL) throw Exception("æœªæ‰¾åˆ°è¯¥å•†å“ï¼");
-	return p->commodity->getPromotion();
+//	»ñÈ¡ÃÜÂë
+int ItemManage::getCode(){
+	return code;
 }
-//	è·å¾—ä¼šå‘˜æŠ˜æ‰£
-float &ItemManage::getVipdiscount( string No ){
-	node *p;								//	å½“å‰é“¾è¡¨èŠ‚ç‚¹åœ°å€
-	for( p=head; p!=NULL; p=p->next){
-		if( p->commodity->getNo( ) == No )
-			break;							//	æ‰¾åˆ°
-	}
-	if( p == NULL ) throw Exception("æœªæ‰¾åˆ°è¯¥å•†å“ï¼");
-	return p->commodity->getVipdiscount();
-}				
-//	è¾“å‡ºåº“å­˜
+//	Êä³ö¿â´æ
 void ItemManage::output( ){
 	node *p;
 	for( p=head; p!=NULL; p=p->next ) 
 	{
-		cout<<setiosflags(ios::fixed)<<setprecision(2)<<setw(12)<<p->commodity->getNo()<<setw(12)<<p->commodity->getName();
-		cout<<setiosflags(ios::fixed)<<setprecision(2)<<setw(12)<<p->commodity->getPrice()<<setw(12)<<p->commodity->getCount();
-		if(p->commodity->getDiscount()==1) cout<<setw(12)<<"ä¸æ‰“æŠ˜";
-		else cout<<(int)(p->commodity->getDiscount()*10)<<setw(11)<<"æŠ˜";
-		if(p->commodity->getPromotion() == false )cout<<setw(12)<<"ä¸ä¿ƒé”€";
-		else cout<<setw(12)<<"ä¹°2èµ 1";
-		if(p->commodity->getVipdiscount()==1) cout<<setw(12)<<"ä¸æ‰“æŠ˜"<<endl;
-		else cout<<(int)(p->commodity->getVipdiscount()*10)<<setw(11)<<"æŠ˜"<<endl;
+		cout<<setiosflags(ios::fixed)<<setprecision(2)<<setw(14)<<p->commodity->getNo()<<setw(14)<<p->commodity->getName()<<setw(14)<<p->commodity->getPrice()<<setw(14)<<p->commodity->getCount();
+		if(p->commodity->getDiscount()==1) cout<<setw(14)<<"²»´òÕÛ";
+		else cout<<(int)(p->commodity->getDiscount()*10)<<setw(13)<<"ÕÛ";
+		if(p->commodity->getPromotion() == false )cout<<setw(14)<<"²»´ÙÏú"<<endl;
+		else cout<<setw(14)<<"Âò2Ôù1"<<endl;
 	}
 }
-//	æŸ¥æ‰¾å•†å“
+//	²éÕÒÉÌÆ·
 bool ItemManage::search( string No ){
-	node *p;								// å½“å‰é“¾è¡¨èŠ‚ç‚¹åœ°å€
+	node *p;								// µ±Ç°Á´±í½ÚµãµØÖ·
 	for( p=head; p!=NULL; p=p->next ) 
 	{
 		if( p->commodity->getNo( )== No )
-		return true;						//	æ‰¾åˆ°
+		return true;						//	ÕÒµ½
 	}
 	if(p==NULL)	return false;
 }
-//	è·å–å¯†ç 
-int &ItemManage::getCode(){
-	return code;
-}
-//	è¯»å–Goodsæ–‡æ¡£
-void ItemManage::readfile( ItemManage &I ){
-	ifstream infile;
-	infile.open("Goods.txt");
-	if(infile){
-		Goods G;
-		while (!infile.eof()) {
-			infile >> G.no >> G.name >> G.price >> G.count >> G.discount >> G.promotion >> G.vipdiscount;
-			I.Add(G.no,G.name,G.price,G.count,G.discount,G.promotion,G.vipdiscount);
-		}
+//	»ñµÃ´ÙÏú
+bool ItemManage::getPromotion( string No ){
+	node *p;								// µ±Ç°Á´±í½ÚµãµØÖ·
+	for( p=head; p!=NULL; p=p->next ) 
+	{
+		if( p->commodity->getNo( )== No )
+			break;							//	ÕÒµ½
 	}
-	else cout<<"è¯»å–æ–‡æœ¬å¤±è´¥ï¼";
-	infile.close();
-}
-//	ä¿å­˜Goodsæ–‡æ¡£
-void ItemManage::savefile( ItemManage &I ){
-    ofstream  save("Goods.txt");
-        if(!save)
-        {
-            cout<<"ä¸èƒ½ä¿å­˜ï¼šGoods.txtï¼ï¼ "<<endl;
-            system("pause");
-            exit(1);
-        }
-    Goods G;
-	node *p;
-	for(p = head; p != NULL; p = p->next){
-		G.no = p->commodity->getNo();
-		G.name = p->commodity->getName();
-		G.price = p->commodity->getPrice();
-		G.count = p->commodity->getCount();
-		G.discount = p->commodity->getDiscount();
-		G.promotion = p->commodity->getPromotion();
-		G.vipdiscount = p->commodity->getVipdiscount();
-		if(p->next != NULL){
-			save << G.no << " " << G.name << " " << G.price << " " << G.count << " " << G.discount << " " << G.promotion << " " << G.vipdiscount << "\n";
-		}
-		else save << G.no << " " << G.name << " " << G.price << " " << G.count << " " << G.discount << " " << G.promotion << " " << G.vipdiscount;
-    }
-    save.close();
+	if(p==NULL) throw Exception("Î´ÕÒµ½¸ÃÉÌÆ·£¡");
+	return p->commodity->getPromotion();
 }

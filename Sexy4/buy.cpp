@@ -17,7 +17,7 @@ Buy::~Buy(){
 }
 
 //	新增货品
-void Buy::AddGoods( string No, string Name, float Price, float Discount,int Count, bool Promotion, float Vipdiscount ){
+void Buy::AddGoods( string No, string Name, float Price, float Discount,int Count, bool Promotion ){
 	node *p = new node;						//  创建链表节点
 	p->commodity = new Goods;
 	p->commodity->no = No;
@@ -26,7 +26,6 @@ void Buy::AddGoods( string No, string Name, float Price, float Discount,int Coun
 	p->commodity->discount = Discount;
 	p->commodity->count = Count;
 	p->commodity->promotion = Promotion;
-	p->commodity->vipdiscount = Vipdiscount;
 	p->commodity->val = 0;
 	p->next = headb;
 	headb = p;								//	插入到链表头部	
@@ -46,71 +45,27 @@ void Buy::RemoveGoods( string No ){
 	delete p;								//	释放链表节点
 	cout<<"删除成功！"<<endl;
 }
-//	计算货品总价和折扣
-void Buy::Sum( bool IsVip, ItemManage S ){
-	node *p;								//	当前链表节点地址
-	float v;								//	原价
-	float d;								//	折后价
+//	获得商品名
+void Buy::Sum(){
+	node *p;					// 当前链表节点地址
 	for( p=headb; p!=NULL; p=p->next ) 
 	{
-		v = p->commodity->count*p->commodity->price;
-		if( IsVip == true ){
-			if(p->commodity->discount!=1){
-				d = v*p->commodity->discount;
-				if(p->commodity->vipdiscount == 1){
-					p->commodity->val = d;
-					dis = dis + (v-d);
-					value = value + d;
-					S.getCount(p->commodity->no) = S.getCount(p->commodity->no) - p->commodity->count;
-				}
-				else{
-					p->commodity->val = d*p->commodity->vipdiscount;
-					dis = dis + (v-p->commodity->val);
-					value = value + p->commodity->val;
-					S.getCount(p->commodity->no) = S.getCount(p->commodity->no) - p->commodity->count;
-				}
-			}
-			else{
-				if(p->commodity->promotion == true && p->commodity->count >= 2 ){
-					dis = dis + p->commodity->price;
-					p->commodity->val = v;
-					value = value + p->commodity->val;
-					p->commodity->count++;
-					S.getCount(p->commodity->no) = S.getCount(p->commodity->no) - p->commodity->count;
-				}
-				if(p->commodity->promotion == false && p->commodity->vipdiscount == 1){
-					p->commodity->val = v;
-					value = value + p->commodity->val;
-					S.getCount(p->commodity->no) = S.getCount(p->commodity->no) - p->commodity->count;
-				}
-				if(p->commodity->promotion == false && p->commodity->vipdiscount != 1){
-					p->commodity->val = v*p->commodity->vipdiscount;
-					dis = dis + (v-p->commodity->val);
-					value = value + p->commodity->val;
-					S.getCount(p->commodity->no) = S.getCount(p->commodity->no) - p->commodity->count;
-				}
-			}
+		if(p->commodity->discount!=1){
+			p->commodity->val = p->commodity->count*p->commodity->price*p->commodity->discount;
+			dis = dis + ((p->commodity->val/p->commodity->discount) - p->commodity->val);
+			value = value + p->commodity->val;
+			
 		}
 		else{
-			if(p->commodity->discount!=1){
-				p->commodity->val = v*p->commodity->discount;
-				dis = dis + ( v-p->commodity->val );
+			if(p->commodity->promotion == true && p->commodity->count>=2 ){
+				dis = dis + p->commodity->price;
+				p->commodity->val = p->commodity->count*p->commodity->price;
 				value = value + p->commodity->val;
-				S.getCount(p->commodity->no) = S.getCount(p->commodity->no) - p->commodity->count;
+				p->commodity->count++;
 			}
 			else{
-				if(p->commodity->promotion == true && p->commodity->count>=2 ){
-					dis = dis + p->commodity->price;
-					p->commodity->val = v;
-					value = value + p->commodity->val;
-					p->commodity->count++;
-					S.getCount(p->commodity->no) = S.getCount(p->commodity->no) - p->commodity->count;
-				}
-				else{
-					p->commodity->val = v;
-					value = value + p->commodity->val;
-					S.getCount(p->commodity->no) = S.getCount(p->commodity->no) - p->commodity->count;
-				}
+				p->commodity->val = p->commodity->count*p->commodity->price;
+				value = value + p->commodity->val;
 			}
 		}
 	}
