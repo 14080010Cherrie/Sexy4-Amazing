@@ -3,20 +3,29 @@ class MemberManage{
     struct node{
 		Member *user;
 		node *next;
-	} *headm;									//  Á´±í±íÍ·Ö¸Õë
+	} *headm;									//  é“¾è¡¨è¡¨å¤´æŒ‡é’ˆ
+	struct Users{
+		string  no;			//  ä¼šå‘˜ç¼–å·
+		string name;		//  ä¼šå‘˜å
+		//long phoneno;		//  æ‰‹æœºå·
+		bool isVip;			//	èº«ä»½
+		int point;			//	ç§¯åˆ†
+	};
 	int code;
 public:
 	MemberManage( );
-	~MemberManage( );							//  ÍêÈ«Òş±ÎMember¶ÔÏó
+	~MemberManage( );							//  å®Œå…¨éšè”½Memberå¯¹è±¡
     void Add( string No, string Name, /*long Phoneno, */bool IsVip,int point );
-												//	ĞÂÔö»áÔ±
-    void Remove( string No );					//	É¾³ı»áÔ± 
-    string &getName( string No );				//	»ñµÃ»áÔ±Ãû
-    //long &getPhoneno( string No );				//  »ñµÃÊÖ»úºÅ
-	bool &getIsVip( string No );				//	»ñµÃÉí·İ
-	int &getPoint( string No );					//	»ñµÃ»ı·Ö
-	void sumPoint( string No, float Value );	//	½áËã»ı·Ö
-	void output( );								//	Êä³ö»áÔ±ÁĞ±í
-	bool search( string No );					//	²éÕÒ»áÔ±
-	int &getCode();								//	ÃÜÂë
+												//	æ–°å¢ä¼šå‘˜
+    void Remove( string No );					//	åˆ é™¤ä¼šå‘˜ 
+    string &getName( string No );				//	è·å¾—ä¼šå‘˜å
+    //long &getPhoneno( string No );				//  è·å¾—æ‰‹æœºå·
+	bool &getIsVip( string No );				//	è·å¾—èº«ä»½
+	int &getPoint( string No );					//	è·å¾—ç§¯åˆ†
+	void sumPoint( string No, float Value );	//	ç»“ç®—ç§¯åˆ†
+	void output( );								//	è¾“å‡ºä¼šå‘˜åˆ—è¡¨
+	bool search( string No );					//	æŸ¥æ‰¾ä¼šå‘˜
+	int &getCode( );							//	å¯†ç 
+	void readfile( MemberManage &M );			//	è¯»å–Membersæ–‡æ¡£
+	void savefile( MemberManage &M );			//	ä¿å­˜Membersæ–‡æ¡£
 };
