@@ -9,7 +9,6 @@
 #include <ctime>
 using namespace std;
 #include "exception.h"
-#include "itemmanage.h"
 #include "buy.h"
 #include "membermanage.h"
 
@@ -17,20 +16,17 @@ void print();
 void login(ItemManage S);
 void mainmenu();
 void submenu();
+//void savefile( );						//	打印清单
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	ItemManage s;
 	MemberManage m;
-	m.Add("USER003","User 003",true,600);
-	m.Add("USER002","User 002",false,200);
-	m.Add("USER001","User 001",true,0);
-	/*login(s);*/
+	m.readfile(m);
+	login(s);
 	system("cls");
 	mainmenu();
-	s.Add("ITEM000002","电池",2.00,100,1,false,0.8);
-	s.Add("ITEM000001","雪碧",3.00,2000,0.8,false,0.5);
-	s.Add("ITEM000000","可口可乐",3.00,5000,1,true,1);
+	s.readfile(s);
 	print();
 	s.output();
 	submenu();
@@ -45,11 +41,16 @@ int _tmain(int argc, _TCHAR* argv[])
 			int cou;
 			cout<<"请输入您要购买的数量：";
 			cin>>cou;
-			if(cou > s.getCount(num)) cout<<"超出剩余数量！"<<endl;
-			if(cou <= s.getCount(num) && b.search( num, cou ) == 1) s.getCount(num) = s.getCount(num) - cou;
-			if(cou <= s.getCount(num) && b.search( num, cou ) == 0){
-				b.AddGoods( num, s.getName(num),s.getPrice(num),s.getDiscount(num),cou,s.getPromotion(num),s.getVipdiscount(num));
-				s.getCount(num) = s.getCount(num) - cou;
+			while(1){
+					if(cou > 0){
+						if(cou > s.getCount(num)) cout<<"超出剩余数量！"<<endl;
+						if(cou <= s.getCount(num) && b.search( num, cou ) == 0){
+							b.AddGoods( num, s.getName(num),s.getPrice(num),s.getDiscount(num),cou,s.getPromotion(num),s.getVipdiscount(num));
+							break;
+						}
+					else cout<<"您输入的数量有误，请重新输入：";
+					cin >> cou;
+				}
 			}
 		}
 		cout<<"是否进行结算(Y结算)：";
@@ -74,12 +75,12 @@ int _tmain(int argc, _TCHAR* argv[])
 					if(m.search(MNo) == true) break;
 				}
 			}
-			b.Sum(m.getIsVip(MNo));
+			b.Sum(m.getIsVip(MNo),s);
 			break;
 		}
 		else if( select == "N" || select == "n" ) {
 			flag == false;
-			b.Sum(flag);
+			b.Sum(flag,s);
 			break;
 		}
 		else cout<<"您输入的信息有误，请重新输入：";
@@ -98,6 +99,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if(b.getDis()!=0 ) cout<<"节省："<<b.getDis()<<"(元)"<<endl;
 	cout<<"**********************"<<endl;
 	system("pause");
+	s.savefile(s);
 	return 0;
 }
 //	登陆
