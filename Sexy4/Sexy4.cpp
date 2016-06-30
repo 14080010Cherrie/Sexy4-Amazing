@@ -9,25 +9,24 @@
 #include <ctime>
 using namespace std;
 #include "exception.h"
-#include "itemmanage.h"
 #include "buy.h"
+#include "membermanage.h"
 
 void print();
 void login(ItemManage S);
 void mainmenu();
 void submenu();
-void listpre();
-void listsuf();
+//void savefile( );						//	打印清单
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	ItemManage s;
+	MemberManage m;
+	m.readfile(m);
 	login(s);
 	system("cls");
 	mainmenu();
-	s.Add("ITEM000000","可口可乐",3.00,5000,1,true);
-	s.Add("ITEM000001","雪碧",3.00,2000,0.8,false);
-	s.Add("ITEM000002","电池",2.00,100,1,false);
+	s.readfile(s);
 	print();
 	s.output();
 	submenu();
@@ -42,26 +41,65 @@ int _tmain(int argc, _TCHAR* argv[])
 			int cou;
 			cout<<"请输入您要购买的数量：";
 			cin>>cou;
-			if(cou > s.getCount(num)) cout<<"超出剩余数量！"<<endl;
-			if(cou <= s.getCount(num) && b.search( num, cou ) == 1) s.getCount(num) = s.getCount(num) - cou;
-			if(cou <= s.getCount(num) && b.search( num, cou ) == 0){
-				b.AddGoods( num, s.getName(num),s.getPrice(num),s.getDiscount(num),cou,s.getPromotion(num));
-				s.getCount(num) = s.getCount(num) - cou;
+			while(1){
+					if(cou > 0){
+						if(cou > s.getCount(num)) cout<<"超出剩余数量！"<<endl;
+						if(cou <= s.getCount(num) && b.search( num, cou ) == 0){
+							b.AddGoods( num, s.getName(num),s.getPrice(num),s.getDiscount(num),cou,s.getPromotion(num),s.getVipdiscount(num));
+							break;
+						}
+					else cout<<"您输入的数量有误，请重新输入：";
+					cin >> cou;
+				}
 			}
-
 		}
 		cout<<"是否进行结算(Y结算)：";
 		cin>>chose;
 	}
-	b.Sum();
+	string select;
+	string MNo;
+	bool flag = false;
 	system("cls");
-	listpre();
+	cout<<"请问是否为会员(Y/N):";
+	cin>>select;
+	while(1){
+		if( select == "Y" || select == "y" ){
+			flag = true; 
+			cout<<"请输入会员编号：";
+			cin>>MNo;
+			while(1){
+				if(m.search(MNo) == true) break;
+				else{
+					cout<<"您输入的编号有误请重新输入：";
+					cin >> MNo;
+					if(m.search(MNo) == true) break;
+				}
+			}
+			b.Sum(m.getIsVip(MNo),s);
+			break;
+		}
+		else if( select == "N" || select == "n" ) {
+			flag == false;
+			b.Sum(flag,s);
+			break;
+		}
+		else cout<<"您输入的信息有误，请重新输入：";
+		cin >> select;
+	}
+	system("cls");
+	cout<<"***商店购物清单***"<<endl;
+	if(flag == true){
+		m.sumPoint(MNo,b.getValue());
+		cout<<"会员编号："<<MNo<<"	会员积分："<<m.getPoint(MNo)<<"分"<<endl;
+		cout<<"----------------------"<<endl;
+	}
 	b.outputGoods();
-	listsuf();
+	cout<<"----------------------"<<"\n"<<"总计：";
 	cout<<b.getValue()<<"(元)"<<endl;
 	if(b.getDis()!=0 ) cout<<"节省："<<b.getDis()<<"(元)"<<endl;
 	cout<<"**********************"<<endl;
 	system("pause");
+	s.savefile(s);
 	return 0;
 }
 //	登陆
@@ -79,15 +117,16 @@ void login(ItemManage S){
 }
 //	打印商品的抬头
 void print(){
-	string title[6];
+	string title[7];
 	title[0]="商品编号"; 
 	title[1]="商品名"; 
 	title[2]="单价"; 
 	title[3]="数量"; 
 	title[4]="折扣";
 	title[5]="是否促销";
-	for(int i=0;i<6;i++){
-		cout.width(14);
+	title[6]="Vip折扣";
+	for(int i=0;i<7;i++){
+		cout.width(12);
 		cout<<left<<title[i];
 	}
 	cout<<endl;
@@ -105,14 +144,10 @@ void submenu(){
 	cout<<"*  *祝您购物愉快！                                                            *"<<endl;
 	cout<<"*******************************************************************************"<<endl;
 }
-//	购物清单
-void listpre(){
-	cout<<"***商店购物清单***"<<endl;
+//	打印时间
+void time(){
 	time_t t;
 	time ( &t );
 	cout<<"打印时间: "<<ctime(&t);
 	cout<<"----------------------"<<endl;
-}
-void listsuf(){
-	cout<<"----------------------"<<"\n"<<"总计：";
 }
