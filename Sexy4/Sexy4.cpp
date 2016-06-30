@@ -11,23 +11,26 @@ using namespace std;
 #include "exception.h"
 #include "itemmanage.h"
 #include "buy.h"
+#include "membermanage.h"
 
 void print();
 void login(ItemManage S);
 void mainmenu();
 void submenu();
-void listpre();
-void listsuf();
 
 int _tmain(int argc, _TCHAR* argv[])
 {
 	ItemManage s;
-	login(s);
+	MemberManage m;
+	m.Add("USER003","User 003",true,600);
+	m.Add("USER002","User 002",false,200);
+	m.Add("USER001","User 001",true,0);
+	/*login(s);*/
 	system("cls");
 	mainmenu();
-	s.Add("ITEM000000","可口可乐",3.00,5000,1,true,1);
-	s.Add("ITEM000001","雪碧",3.00,2000,0.8,false,0.5);
 	s.Add("ITEM000002","电池",2.00,100,1,false,0.8);
+	s.Add("ITEM000001","雪碧",3.00,2000,0.8,false,0.5);
+	s.Add("ITEM000000","可口可乐",3.00,5000,1,true,1);
 	print();
 	s.output();
 	submenu();
@@ -52,11 +55,45 @@ int _tmain(int argc, _TCHAR* argv[])
 		cout<<"是否进行结算(Y结算)：";
 		cin>>chose;
 	}
-	b.Sum();
+	string select;
+	string MNo;
+	bool flag = false;
 	system("cls");
-	listpre();
+	cout<<"请问是否为会员(Y/N):";
+	cin>>select;
+	while(1){
+		if( select == "Y" || select == "y" ){
+			flag = true; 
+			cout<<"请输入会员编号：";
+			cin>>MNo;
+			while(1){
+				if(m.search(MNo) == true) break;
+				else{
+					cout<<"您输入的编号有误请重新输入：";
+					cin >> MNo;
+					if(m.search(MNo) == true) break;
+				}
+			}
+			b.Sum(m.getIsVip(MNo));
+			break;
+		}
+		else if( select == "N" || select == "n" ) {
+			flag == false;
+			b.Sum(flag);
+			break;
+		}
+		else cout<<"您输入的信息有误，请重新输入：";
+		cin >> select;
+	}
+	system("cls");
+	cout<<"***商店购物清单***"<<endl;
+	if(flag == true){
+		m.sumPoint(MNo,b.getValue());
+		cout<<"会员编号："<<MNo<<"	会员积分："<<m.getPoint(MNo)<<"分"<<endl;
+		cout<<"----------------------"<<endl;
+	}
 	b.outputGoods();
-	listsuf();
+	cout<<"----------------------"<<"\n"<<"总计：";
 	cout<<b.getValue()<<"(元)"<<endl;
 	if(b.getDis()!=0 ) cout<<"节省："<<b.getDis()<<"(元)"<<endl;
 	cout<<"**********************"<<endl;
@@ -105,14 +142,10 @@ void submenu(){
 	cout<<"*  *祝您购物愉快！                                                            *"<<endl;
 	cout<<"*******************************************************************************"<<endl;
 }
-//	购物清单
-void listpre(){
-	cout<<"***商店购物清单***"<<endl;
+//	打印时间
+void time(){
 	time_t t;
 	time ( &t );
 	cout<<"打印时间: "<<ctime(&t);
 	cout<<"----------------------"<<endl;
-}
-void listsuf(){
-	cout<<"----------------------"<<"\n"<<"总计：";
 }
